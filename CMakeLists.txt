@@ -1,33 +1,19 @@
-cmake_minimum_required(VERSION 2.6.4)
+cmake_minimum_required(VERSION 3.6)
+project(Ex3New)
 
-if (POLICY CMP0048)
-  cmake_policy(SET CMP0048 NEW)
-endif (POLICY CMP0048)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpthread")
+add_subdirectory(lib/googletest-master)
+include_directories(lib/googletest-master/googletest/include)
+include_directories(lib/googletest-master/googlemock/include)
 
-project( googletest-distribution )
+set(SOURCE_FILES src/AIPlayer.cpp src/AIPlayer.h src/Board.cpp src/Board.h src/DefaultLogic.cpp
+        src/DefaultLogic.h src/GameFlow.cpp src/GameFlow.h src/HumanPlayer.cpp src/HumanPlayer.h
+        src/Player.cpp src/Player.h src/Print.h src/PrintConsole.cpp src/PrintConsole.h src/Square.cpp
+        src/Square.h src/GameLogic.cpp src/GameLogic.h)
 
-enable_testing()
+set(TEST_FILES test/BoardTests.cpp test/SquareTests.cpp test/DefaultLogicTests.cpp test/GameFlowTests.cpp  test/DefaultLogicTests.h test/GameFlowTests.h test/SquareTests.h test/BoardTests.h)
 
-include(CMakeDependentOption)
-if (CMAKE_VERSION VERSION_LESS 2.8.5)
-  set(CMAKE_INSTALL_BINDIR "bin" CACHE STRING "User executables (bin)")
-  set(CMAKE_INSTALL_LIBDIR "lib${LIB_SUFFIX}" CACHE STRING "Object code libraries (lib)")
-  set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE STRING "C header files (include)")
-  mark_as_advanced(CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR)
-else()
-  include(GNUInstallDirs)
-endif()
-
-option(BUILD_GTEST "Builds the googletest subproject" OFF)
-
-#Note that googlemock target already builds googletest
-option(BUILD_GMOCK "Builds the googlemock subproject" ON)
-
-cmake_dependent_option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON "BUILD_GTEST OR BUILD_GMOCK" OFF)
-cmake_dependent_option(INSTALL_GMOCK "Enable installation of googlemock. (Projects embedding googlemock may want to turn this OFF.)" ON "BUILD_GMOCK" OFF)
-
-if(BUILD_GMOCK)
-  add_subdirectory( googlemock )
-elseif(BUILD_GTEST)
-  add_subdirectory( googletest )
-endif()
+add_executable(reversiTests ${SOURCE_FILES} ${TEST_FILES} test/gtest_main.cpp)
+add_executable(reversiGame ${SOURCE_FILES} src/main.cpp)
+target_link_libraries(reversiTests gtest gtest_main pthread)
+add_test(reversiTests reversiTests)
