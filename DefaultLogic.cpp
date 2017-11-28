@@ -4,7 +4,11 @@
 **/
 
 #define NUMDIRECTIONS 8
+#define INT_MAX 10000000
+#define INT_MIN -10000000
+
 #include "DefaultLogic.h"
+
 
 DefaultLogic::DefaultLogic(Board* board, Player& xPlayer, Player& oPlayer,Print* printStyle) :
         GameLogic(board, xPlayer, oPlayer, printStyle) {
@@ -24,32 +28,23 @@ DefaultLogic::DefaultLogic(Board* board, Player& xPlayer, Player& oPlayer,Print*
 }
 
 
-bool DefaultLogic::gameOver(){
-    bool winFlag = false;
+enum gameOverOrNot DefaultLogic::gameOver(){
+    gameOverOrNot currentGame = gameContinues;
     //vector that suppose to contain all the possible moves of the player
     vector<Square> squares;
     vector<Square>&options = squares;
     //case 1 : the game ends because the board is full
-    if(board->isBoardFull()){
-        this->printStyle->printBoard(*board);
-        this->printStyle->fullBoard();
-        winFlag=true;
-    }
-    else{
+    if(board->isBoardFull())
+        currentGame = gameOverFullBoard;
+
+    else
         //case 2: the game ends because both of the players has no options to move
         if((isAvailableMove(*board, this->xPlayer).empty()) &&
            (isAvailableMove(*board, this->oPlayer).empty())) {
-            this->printStyle->printBoard(*board);
-            this->printStyle->noOptionsToBothPlayers();
-            winFlag=true;
+            currentGame = gameOverNoMoreMoves;
         }
-    }
-    if(winFlag){
-        //check who is the winner and announce it
-        enum Type winner = checkWhoWins(board);
-        this->printStyle->announceWhoWins(winner);
-    }
-    return winFlag;
+
+    return currentGame;
 }
 
 
@@ -57,8 +52,8 @@ vector<Square> DefaultLogic::isAvailableMove(Board& gameBoard, Player player){
     enum Type currentPlayer = player.getType();
     //vector that suppose to contain all the possible moves of the player
     vector<Square> squares , &options = squares;
-    for(int i=1;i<gameBoard.getBoardSize()+1 ;i++){
-        for(int j=1;j<gameBoard.getBoardSize()+1 ;j++){
+    for(int i=0;i<gameBoard.getBoardSize() ;i++){//ToDO:start by 1 and finish +1
+        for(int j=0;j<gameBoard.getBoardSize() ;j++){//ToDO:start by 1 and finish +1
             //when we found a square of the current player - we should check the squares around it
             if(gameBoard.getSquare(i,j)->getType() == currentPlayer){
                 checkSquare(i, j, currentPlayer, options, gameBoard);
@@ -71,7 +66,7 @@ vector<Square> DefaultLogic::isAvailableMove(Board& gameBoard, Player player){
 
 void DefaultLogic::checkSquare(int i, int j,enum Type player, vector<Square>& options, Board& gameBoard){
     //check what is the type of the enemy - 'X' or 'O'
-    char enemy;
+    Type enemy;
     if (player == typeX)
         enemy = typeO;
     else
@@ -91,7 +86,7 @@ void DefaultLogic::checkSquare(int i, int j,enum Type player, vector<Square>& op
             if(!gameBoard.isSquareInBoard(currentX,currentY)) {
                 continue;
             } else {
-                if ((gameBoard.getSquare(currentX,currentY)->getType() == ' ') &&
+                if ((gameBoard.getSquare(currentX,currentY)->getType() == typeEmpty) &&
                     (!(gameBoard.getSquare(currentX,currentY)->isSquareInVector(options)))){
                     //the square is on the board and it is free, so add this option to the options list
                     options.push_back(*(gameBoard.getSquare(currentX,currentY)));
@@ -111,9 +106,8 @@ void DefaultLogic::makeMove(Player& currentPlayer, Board& gameBoard, int row, in
         enemy = temp;
     }
     //change the square that the player choose to the current player sign
-    gameBoard.setSquare(row, col, currentPlayer.getType());
+    gameBoard.setSquare(row, col, currentPlayer.getType());//ToDO:without minus 1
     //change the relevant squares around the square that the current player choose
-
     for (int k = 0; k < 8; k++) {
         if (isAnotherSquareOfPlayerInDirection(currentPlayer.getType(), directions[k],row, col)) {
             changeSquares(currentPlayer, enemy, directions[k], gameBoard, row, col);
@@ -156,7 +150,7 @@ enum Type DefaultLogic::checkWhoWins(Board *gameBoard){
         return typeEmpty;
 }
 
-void DefaultLogic::makeMoveAI(Board &gameBoard, Player player) {
+Square DefaultLogic::makeMoveAI(Board &gameBoard, Player player) {
 
     //AI is given a vector of possible moves.
     vector<Square> options = isAvailableMove(*this->board, player);
@@ -170,8 +164,6 @@ void DefaultLogic::makeMoveAI(Board &gameBoard, Player player) {
         //AI play currentMove Pointer
         this->makeMove(player,gameBoard,currentMove->getX(),currentMove->getY());
 
-        //Announce AI played move.
-        this->printStyle->printPlayAI(currentMove->getX() + 1,currentMove->getY() + 1);
     }
 
 }
@@ -179,7 +171,7 @@ void DefaultLogic::makeMoveAI(Board &gameBoard, Player player) {
 //(Chooses a move to play by checking each move of the O player, to get the minimal points of the X player)
 Square* DefaultLogic::minMaxMoveChosen(Board &gameBoard, vector<Square>& options){
 
-    int min = INT16_MAX;
+    int min = INT_MAX;
     int temp;
     Square * bestMove = NULL;
     //Go over all possible given moves of the O player.
@@ -209,7 +201,7 @@ int DefaultLogic::moveWithMinimalHumanPlayerPoints(Square currentAIMove, Board &
 
     //get all possible next moves for player X.
     vector<Square> options = isAvailableMove(gameboard2, xPlayer);
-    int max = INT16_MIN;
+    int max = INT_MIN;
     int temp;
 
     for( vector<Square>::iterator it=options.begin();it!=options.end();it++){

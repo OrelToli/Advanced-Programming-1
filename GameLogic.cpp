@@ -40,9 +40,9 @@ pair<int,int> GameLogic::valueOfDirection(Direction d) {
 };
 
 
-bool GameLogic::isAnotherSquareOfPlayerInDirection(char player, Direction direction, int i, int j){
+bool GameLogic::isAnotherSquareOfPlayerInDirection(enum Type player, Direction direction, int i, int j){
     int dx = valueOfDirection(direction).first, dy = valueOfDirection(direction).second,
-            currentX = i + dx, currentY = j + valueOfDirection(direction).second;
+            currentX = i + dx, currentY = j + dy;
     while(this->board->isSquareInBoard(currentX,currentY)){
         if(this->board->getSquareType(currentX,currentY) == player)
             return true;

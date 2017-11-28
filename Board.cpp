@@ -90,4 +90,33 @@ bool Board::isSquareInBoard(int row, int col) {
     return true;
 }
 
+void Board::resetBoard(){
+    for (int i = 0; i < this->boardSize + 1; i++)
+        for (int j = 0; j < this->boardSize + 1; j++) {
+            this->board[i][j] = new Square(i, j, typeEmpty);
+        }
+}
+
+
+bool Board::equals(Board* otherBoard){
+    for (int i = 0; i < this->boardSize + 1; i++)
+        for (int j = 0; j < this->boardSize + 1; j++) {
+            if(!this->board[i][j]->equals(*otherBoard->getSquare(i,j))){
+                return false;
+            }
+        }
+    return true;
+}
+
+
+Square*** Board::getBoard(){
+    return this->board;
+}
+
+Board::Board() {}
+
+
+
+
+
 

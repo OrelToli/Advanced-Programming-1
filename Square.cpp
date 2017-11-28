@@ -38,6 +38,10 @@ bool Square::equals(Square& other){
             (this->getY() == other.getY()));
 }
 
+bool Square::isSameLocation(Square& other){
+    return (((this->getX() == other.getX()) &&
+            (this->getY() == other.getY())));
+}
 
 bool Square::isSquareInVector(vector<Square>& options){
     for( vector<Square>::iterator it=options.begin();it!=options.end();it++){

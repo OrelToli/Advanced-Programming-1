@@ -6,6 +6,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 #define NUMDIRECTIONS 8
+enum gameOverOrNot {gameOverFullBoard, gameOverNoMoreMoves, gameContinues};
 using namespace std;
 
 #include <vector>
@@ -32,7 +33,7 @@ public :
      * @parameters : no parameters
      * @return : true if the game should over or false otherwise
      **/
-    virtual bool gameOver() = 0;
+    virtual enum gameOverOrNot gameOver() = 0;
 
     /**
       * @name : isAvailableMove
@@ -75,8 +76,9 @@ public :
      * Playing it, and announcing it.
      * @param gameBoard - current gameboard
      * @param player - Our AI player.
+     * @return - the AI move
      */
-    virtual void makeMoveAI(Board& gameBoard, Player player) = 0;
+    virtual Square makeMoveAI(Board& gameBoard, Player player) = 0;
 
 
     /**
@@ -120,7 +122,7 @@ public :
      * @parameters : the square of the current player, the sign of the current player and direction to check
      * @return : the function returns true if there is another square of the player in the direction, or false otherwise
      **/
-    bool isAnotherSquareOfPlayerInDirection(char currentPlayer, Direction direction, int row, int col);
+    bool isAnotherSquareOfPlayerInDirection(enum Type currentPlayer, Direction direction, int row, int col);
 
 
 

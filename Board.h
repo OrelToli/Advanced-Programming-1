@@ -29,6 +29,8 @@ public :
      */
     Board(Board& oldBoardToCopy);
 
+    Board();
+
 
     /**
      * @name : getBoardSize
@@ -78,6 +80,30 @@ public :
     * @return : the function frees the allocated memory
     **/
     ~Board();
+
+    /**
+    * @name : resetBoard
+    * @parameters : no parameters
+    * @return : the function deletes all the squares
+    **/
+    void resetBoard();
+
+    /**
+    * @name : equals
+    * @parameters : another board
+    * @return : the function returns true if the boards are equals, or false otherwise
+    **/
+    bool equals(Board* otherBoard);
+
+    /**
+    * @name : getBoard
+    * @parameters : no parameters
+    * @return : the function returns the board of the game
+    **/
+    Square*** getBoard();
+
+
+
 
 private :
     int boardSize ;

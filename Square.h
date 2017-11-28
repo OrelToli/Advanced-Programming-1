@@ -65,6 +65,13 @@ public :
      **/
     bool isSquareInVector(vector<Square>& options);
 
+    /**
+ * @name : isSameLocation
+ * @parameters : other square
+ * @return : true if the squares are on the same location or false otherwise
+ **/
+    bool isSameLocation(Square& other);
+
 private :
     int x;
     int y;

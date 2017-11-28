@@ -7,7 +7,6 @@
 #define DEFAULTLOGIC_H
 
 #include "GameLogic.h"
-
 class DefaultLogic : public GameLogic {
 
 public :
@@ -23,7 +22,7 @@ public :
      * @parameters : no parameters
      * @return : true if the game should over or false otherwise
      **/
-    bool gameOver();
+    enum gameOverOrNot gameOver();
 
     /**
       * @name : isAvailableMove
@@ -66,7 +65,7 @@ public :
      * @param gameBoard - current gameboard
      * @param player - Our AI player.
      */
-    void makeMoveAI(Board& gameBoard, Player player);
+    Square makeMoveAI(Board& gameBoard, Player player);
 
     /**
       * The MinMax function, for a given vector of possible moves for the AI, runs in a loop, checks for each

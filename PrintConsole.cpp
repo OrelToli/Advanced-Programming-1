@@ -63,7 +63,7 @@ void PrintConsole::wrongInput(){
 
 
 void PrintConsole::announceWhoWins(enum Type winner) {
-    if(winner != ' ')
+    if(winner != typeEmpty)
         cout<<"the winner is: "<<returnType(winner)<<"!!!"<<endl;
     else
         cout<<"draw!!!"<<endl;
@@ -91,7 +91,10 @@ void PrintConsole::noPossibleOptionsToCurrentPlayer(enum Type currentPlayer) {
 
 
 void PrintConsole::chooseAIGameOrCoop() {
-    cout<<"Choose game type: 0 - for User vs User, 1 - for User vs AI"<<endl;
+    cout<<"Choose the type of the game :"<<endl;
+    cout<<"insert 0 for human player against human player "<<endl;
+    cout<<"insert 1 for human player against AI player "<<endl;
+
 
 
 }

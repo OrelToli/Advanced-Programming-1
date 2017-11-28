@@ -22,7 +22,6 @@ GameFlow:: GameFlow(GameLogic* gameLogic, Board* board, Player& xPlayer, Player&
 
 void GameFlow::runGame(){
 
-
     Player current=this->xPlayer;
     Player& currentPlayer = current;
     //player flag is used to change turns between the players
@@ -30,12 +29,18 @@ void GameFlow::runGame(){
     Board& gameBoard = *this->board;
     int gameType = AIorUser();
 
+    gameOverOrNot currentGame = this->gameLogic->gameOver();
     //run the game until the game is over
-    while (!this->gameLogic->gameOver()) {
+    while (currentGame == gameContinues) {
 
         //Checking game type. If AI is playing, run makeMoveAI.
-        if(gameType && currentPlayer.getType() == typeO)
-            gameLogic->makeMoveAI(gameBoard, currentPlayer);
+        if (gameType && currentPlayer.getType() == typeO) {
+            Square currentAIMove = gameLogic->makeMoveAI(gameBoard, currentPlayer);
+
+            //Announce AI played move.
+            printStyle->printPlayAI(currentAIMove.getX() + 1,currentAIMove.getY() + 1);
+
+        }
 
         //Player X is user and always plays. If the game is User vs User & Player is 0, let him play as well.
         if(currentPlayer.getType() == typeX || (currentPlayer.getType() == typeO && !gameType)) {
@@ -58,7 +63,21 @@ void GameFlow::runGame(){
         }
         //change the turn between the players
         changeTurn(currentPlayer, playerFlag);
+        currentGame = this->gameLogic->gameOver();
     }
+    if(currentGame == gameOverFullBoard) {
+        this->printStyle->printBoard(*board);
+        this->printStyle->fullBoard();
+
+    } else if (currentGame == gameOverNoMoreMoves) {
+        this->printStyle->printBoard(*board);
+        this->printStyle->noOptionsToBothPlayers();
+
+    }
+    //check who is the winner and announce it
+    enum Type winner = this->gameLogic->checkWhoWins(board);
+    this->printStyle->announceWhoWins(winner);
+
 }
 
 
@@ -107,8 +126,6 @@ void GameFlow::getMoveAndPlayIt(Board& gameBoard, Player& currentPlayer, vector<
     //make the current player's move
     gameLogic->makeMove(currentPlayer, gameBoard, row - 1, col - 1);
 }
-
-
 
 
 
