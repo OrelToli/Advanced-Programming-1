@@ -1,11 +1,13 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 #define NUMDIRECTIONS 8
+#define INT_MAX 10000000
+#define INT_MIN -10000000
 enum gameOverOrNot {gameOverFullBoard, gameOverNoMoreMoves, gameContinues};
 using namespace std;
 
@@ -27,49 +29,6 @@ public :
      * @return : the function creates new game logic object
      **/
     GameLogic(Board* board, Player& xPlayer, Player& oPlayer,Print* printStyle);
-
-    /**
-     * @name : gameOver
-     * @parameters : no parameters
-     * @return : true if the game should over or false otherwise
-     **/
-    virtual enum gameOverOrNot gameOver() = 0;
-
-    /**
-      * @name : isAvailableMove
-      * @parameters : the board of the game and the current player
-      * @return : the function returns list of squares that optionally to the player's move
-      **/
-    virtual vector<Square> isAvailableMove(Board& gameBoard, Player currentPlayer) = 0;
-
-    /**
-     * @name : makeMove
-     * @parameters : the current player, board of the game and the location of the square
-     * @return : the function makes one of the available moves of the current player
-     **/
-    virtual void makeMove(Player& currentPlayer, Board& gameBoard, int row, int col) = 0;
-
-    /**
-     * @name : checkWhoWins
-     * @parameters : the game board
-     * @return : the function returns the player who won the game
-     **/
-    virtual enum Type checkWhoWins(Board *gameBoard) = 0;
-
-    /**
-     * @name : checkSquare
-     * @parameters : the location of the square, vector of options and the board of the game
-     * @return : the function adds optional moves to the vector of squares
-     **/
-    virtual void checkSquare(int i, int j,enum Type player,vector<Square>& options, Board& gameBoard) = 0;
-
-    /**
-     * @name : changeSquares
-     * @parameters : both of the players, direction, gameBoard and the location of the square
-     * @return : the function changes the squares of the enemy to the squares of the player
-     **/
-    virtual void changeSquares(Player& currentPlayer, Player& enemy, Direction direction, Board& gameBoard, int i, int j) = 0;
-
 
     /**
      * The function is responsible for getting the current board, checking the best move to play for the AI,
@@ -124,8 +83,58 @@ public :
      **/
     bool isAnotherSquareOfPlayerInDirection(enum Type currentPlayer, Direction direction, int row, int col);
 
+    /**
+ * @name : gameOver
+ * @parameters : no parameters
+ * @return : true if the game should over or false otherwise
+ **/
+    enum gameOverOrNot gameOver();
 
+    /**
+      * @name : isAvailableMove
+      * @parameters : the board of the game and the current player
+      * @return : the function returns list of squares that optionally to the player's move
+      **/
+    vector<Square> isAvailableMove(Board& gameBoard, Player currentPlayer);
 
+    /**
+     * @name : makeMove
+     * @parameters : the current player, board of the game and the location of the square
+     * @return : the function makes one of the available moves of the current player
+     **/
+    void makeMove(Player& currentPlayer, Board& gameBoard, int row, int col);
+
+    /**
+     * @name : checkWhoWins
+     * @parameters : no parameters
+     * @return : the function returns the player who won the game
+     **/
+    enum Type checkWhoWins(Board *gameBoard);
+
+    /**
+     * @name : checkSquare
+     * @parameters : the location of the square, vector of options and the board of the game
+     * @return : the function adds optional moves to the vector of squares
+     **/
+    void checkSquare(int i, int j,enum Type player,vector<Square>& options, Board& gameBoard);
+
+    /**
+     * @name : changeSquares
+     * @parameters : both of the players, direction, gameBoard and the location of the square
+     * @return : the function changes the squares of the enemy to the squares of the player
+     **/
+    void changeSquares(Player& currentPlayer, Player& enemy, Direction direction, Board& gameBoard, int i, int j);
+
+    /**
+   * Gets a vector of possible moves. The function is responsible for declaring the possible moves,
+   * getting the move input from the user, and playing it.
+   * @param gameBoard - The current gameboard
+   * @param currentPlayer - The current player to play the game
+   * @param options - Our vector of possible moves.
+   */
+    void getMoveAndPlayIt(Board& gameBoard, Player& currentPlayer, vector<Square>& options);
+
+    void humanMakeMove(Board& gameBoard, Player& player, Print* printStyle);
 
 protected:
     Direction directions[NUMDIRECTIONS];

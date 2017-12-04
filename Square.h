@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef SQUARE_H_
 #define SQUARE_H_
@@ -66,10 +66,10 @@ public :
     bool isSquareInVector(vector<Square>& options);
 
     /**
- * @name : isSameLocation
- * @parameters : other square
- * @return : true if the squares are on the same location or false otherwise
- **/
+     * @name : isSameLocation
+     * @parameters : other square
+     * @return : true if the squares are on the same location or false otherwise
+     **/
     bool isSameLocation(Square& other);
 
 private :

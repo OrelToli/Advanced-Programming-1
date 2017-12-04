@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #include "PrintConsole.h"
 
@@ -90,12 +90,11 @@ void PrintConsole::noPossibleOptionsToCurrentPlayer(enum Type currentPlayer) {
 }
 
 
-void PrintConsole::chooseAIGameOrCoop() {
-    cout<<"Choose the type of the game :"<<endl;
-    cout<<"insert 0 for human player against human player "<<endl;
-    cout<<"insert 1 for human player against AI player "<<endl;
-
-
+void PrintConsole::chooseGameType() {
+    cout<<"Choose an opponent type :"<<endl;
+    cout<<"1. a human local player"<<endl;
+    cout<<"2. an AI player"<<endl;
+    cout<<"3. a remote player"<<endl;
 
 }
 

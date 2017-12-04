@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef PRINTCONSOLE_H
 #define PRINTCONSOLE_H
@@ -91,10 +91,11 @@ public :
     void noPossibleOptionsToCurrentPlayer(enum Type currentPlayer) ;
 
     /**
-     * @name :
+     * @name :chooseAIGameOrCoop
+     * @parameters : no parameters
      * Asks the player whether he wants to play a CO-OP game or game vs AI
      */
-    void chooseAIGameOrCoop() ;
+    void chooseGameType() ;
 
 
     /**
@@ -112,6 +113,7 @@ public :
     char returnType(enum Type type);
 
     /**
+     * @name : boardAfterUser
      * @name : Prints on the screen that the User player played.
      */
     void boardAfterUser();

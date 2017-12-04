@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 #include "Board.h"
 
 Board::Board(int size) {
@@ -84,7 +84,7 @@ bool Board::isBoardFull() {
 
 
 bool Board::isSquareInBoard(int row, int col) {
-    if ((row >= this->boardSize) || (row < 1) || (col >= this->boardSize) || (col < 1)) {
+    if ((row >= this->boardSize) || (row < 0) || (col >= this->boardSize) || (col < 0)) {
         return false;
     }
     return true;
@@ -106,11 +106,6 @@ bool Board::equals(Board* otherBoard){
             }
         }
     return true;
-}
-
-
-Square*** Board::getBoard(){
-    return this->board;
 }
 
 Board::Board() {}

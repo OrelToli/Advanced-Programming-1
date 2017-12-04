@@ -1,70 +1,192 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #include "GameFlow.h"
 #include "HumanPlayer.h"
 #include "AIPlayer.h"
-#include <limits>
+#include "RemotePlayer.h"
+#include "PrintConsole.h"
+#include "DefaultLogic.h"
+#include "AILogic.h"
+#include "RemoteLogic.h"
+#include "Client.h"
+
 
 using namespace std;
 
-GameFlow:: GameFlow(GameLogic* gameLogic, Board* board, Player& xPlayer, Player& oPlayer, Print* printStyle) :
-        gameLogic(gameLogic), board(board), xPlayer(xPlayer), oPlayer(oPlayer) , printStyle(printStyle) {
-    this->gameLogic = gameLogic;
-    this->board = board;
-    this->xPlayer = xPlayer;
-    this->oPlayer = oPlayer;
-    this->printStyle = printStyle;
+GameFlow:: GameFlow(int boardSize) : xPlayer(xPlayer), oPlayer(oPlayer), gameLogic(gameLogic) {
+
+    Board *gameBoard = new Board(boardSize);
+    PrintConsole printConsole = PrintConsole();
+    Print &printStyle = printConsole;
+    Player player1 = HumanPlayer(typeX), player2 = Player(typeO);
+
+    this->gameLogic = decideGameType();
+    this->board = gameBoard;
+    this->xPlayer = player1;
+    this->oPlayer = player2;
+    this->currentGame = gameContinues;
 }
 
 
 void GameFlow::runGame(){
+
+    switch(type) {
+        case (Local) :
+            handleHumanGame();
+            break;
+
+        case (AI) :
+            handleAIGame();
+            break;
+
+
+        case (Remote) :
+            handleRemoteGame();
+            break;
+    }
+
+    delete this->board;
+}
+
+
+
+
+void GameFlow::handleHumanGame() {
+    Player current=this->xPlayer;
+    Player& currentPlayer = current;
+
+    //player flag is used to change turns between the players
+    bool flag = true,&playerFlag = flag ;
+    Board& gameBoard = *this->board;
+
+    //run the game until the game is over
+    while (currentGame == gameContinues) {
+
+        //check what is the optional moves for the current player
+        gameLogic.humanMakeMove(*this->board, currentPlayer,printStyle);
+
+        //change the turn between the players
+        changeTurn(currentPlayer, playerFlag);
+        this->currentGame = this->gameLogic.gameOver();
+    }
+
+    printGameOverAndWinner(this->currentGame);
+}
+
+
+
+
+void GameFlow::handleAIGame() {
 
     Player current=this->xPlayer;
     Player& currentPlayer = current;
     //player flag is used to change turns between the players
     bool flag = true,&playerFlag = flag ;
     Board& gameBoard = *this->board;
-    int gameType = AIorUser();
 
-    gameOverOrNot currentGame = this->gameLogic->gameOver();
     //run the game until the game is over
     while (currentGame == gameContinues) {
 
         //Checking game type. If AI is playing, run makeMoveAI.
-        if (gameType && currentPlayer.getType() == typeO) {
-            Square currentAIMove = gameLogic->makeMoveAI(gameBoard, currentPlayer);
-
+        if (currentPlayer.getType() == typeO) {
+            Square currentAIMove = gameLogic.makeMoveAI(gameBoard, currentPlayer);
             //Announce AI played move.
             printStyle->printPlayAI(currentAIMove.getX() + 1,currentAIMove.getY() + 1);
-
-        }
-
-        //Player X is user and always plays. If the game is User vs User & Player is 0, let him play as well.
-        if(currentPlayer.getType() == typeX || (currentPlayer.getType() == typeO && !gameType)) {
+        } else {
 
             //check what is the optional moves for the current player
-            vector<Square> options = gameLogic->isAvailableMove(*this->board, currentPlayer);
-            if (options.empty()) {
-                this->printStyle->noPossibleOptionsToCurrentPlayer(currentPlayer.getType());
-                changeTurn(currentPlayer, playerFlag);
-                continue;
-            }
-            getMoveAndPlayIt(gameBoard, currentPlayer, options);
-            options.clear();
-
-            if(gameType)
-                printStyle->boardAfterUser();
-
-            printStyle->printBoard(gameBoard);
-
+            gameLogic.humanMakeMove(*this->board, currentPlayer,printStyle);
         }
         //change the turn between the players
         changeTurn(currentPlayer, playerFlag);
-        currentGame = this->gameLogic->gameOver();
+        currentGame = this->gameLogic.gameOver();
     }
+
+    printGameOverAndWinner(this->currentGame);
+}
+
+
+//Here is like the main of the client.
+void GameFlow::handleRemoteGame() {
+
+    int turn;
+    Board& gameBoard = *this->board;
+
+
+    Client client = Client("127.0.0.1", 8000);
+    if (setupClientAndPlayerType(client) == 1) {
+        Player localPlayer = HumanPlayer(typeX);
+        Player remotePlayer = RemotePlayer(typeO);
+        turn = 1;
+    } else {
+        Player localPlayer = HumanPlayer(typeO);
+        Player remotePlayer = RemotePlayer(typeX);
+        turn = 0;
+
+
+        ///print board and say waiting for other player
+    }
+
+    //1 is turn of human, 0 is turn of remote
+    while (currentGame == gameContinues) {
+
+        if(turn) {
+            gameLogic.humanMakeMove(gameBoard,localPlayer,printStyle);
+            ///you need to get the move somehow, in order to send it.
+            //turn of human logic
+            ///update here the other player!
+
+        } else {
+            ///get a move from the second player!
+
+
+            //turn of remote logic
+        }
+
+        turn = changeRemoteTurn(turn);
+        currentGame = this->gameLogic.gameOver();
+    }
+
+
+    ///if game is over, send to them or receive that the game is over
+    printGameOverAndWinner(this->currentGame);
+}
+
+int GameFlow::changeRemoteTurn(int turn){
+
+    if(turn) {
+        return 0;
+    } else {
+        return 1;
+    }
+
+}
+
+
+
+
+//0 for x local, 1 for O local
+int GameFlow::setupClientAndPlayerType(Client& client) {
+    try {
+        client.connectToServer();
+    } catch (const char *msg) {
+        cout << "Failed to connect to server. Reason:" << msg << endl;
+        exit(-1);
+    }
+
+    return (client.getPlayerType());
+
+}
+
+
+
+
+
+void GameFlow::printGameOverAndWinner(gameOverOrNot currentGame) {
+
     if(currentGame == gameOverFullBoard) {
         this->printStyle->printBoard(*board);
         this->printStyle->fullBoard();
@@ -75,58 +197,44 @@ void GameFlow::runGame(){
 
     }
     //check who is the winner and announce it
-    enum Type winner = this->gameLogic->checkWhoWins(board);
+    enum Type winner = this->gameLogic.checkWhoWins(board);
     this->printStyle->announceWhoWins(winner);
 
 }
 
 
-int GameFlow::AIorUser() {
+GameLogic GameFlow::decideGameType() {
     int playType;
-    this->printStyle->chooseAIGameOrCoop();
+    Player player2(typeO);
+    this->printStyle->chooseGameType();
     cin>>playType;
-    if(playType) {
-        Player player2 = AIPlayer(typeO);
-        this->oPlayer = player2;
+    switch(playType) {
 
-    } else {
-        Player player2 = HumanPlayer(typeO);
-        this->oPlayer = player2;
+            case (1):
+                player2 = HumanPlayer(typeO);
+                this->oPlayer = player2;
+                GameLogic logic = DefaultLogic(this->board, this->xPlayer, this->oPlayer, this->&printStyle);
+                this->type = Local;
+                return logic;
+
+            case (2):
+                player2 = AIPlayer(typeO);
+                this->oPlayer = player2;
+                GameLogic logic2 = AILogic(this->board, this->xPlayer, this->oPlayer, this->&printStyle);
+                this->type = AI;
+                return logic2;
+
+            case (3):
+                player2 = RemotePlayer(typeO);
+                this->oPlayer = player2;
+                GameLogic logic3 = RemoteLogic(this->board, this->xPlayer, this->oPlayer, this->&printStyle);
+                this->type = Remote;
+                return logic3;
+
+        default:
+            break;
     }
-
-    return playType;
-
 }
-
-
-void GameFlow::getMoveAndPlayIt(Board& gameBoard, Player& currentPlayer, vector<Square>& options) {
-    int row, col;
-    char dummy;
-    //print the current state of the board and ask move from the player
-    this->printStyle->printBoard(gameBoard);
-    this->printStyle->announceTurn(currentPlayer);
-    this->printStyle->printOptionsToPlayer(options);
-    //wait to the user input and check correctness of it
-    while (true) {
-        this->printStyle->askMoveFromPlayer();
-        cin >> row >> dummy >> col;
-        //check if row and col are valid integers
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        if ((!board->isSquareInBoard(row - 1, col - 1)) ||
-            (!gameBoard.getSquare(row - 1, col - 1)->isSquareInVector(options))) {
-            this->printStyle->wrongInput();
-            continue;
-        }
-        break;
-    }
-    this->printStyle->createSpace();
-    //make the current player's move
-    gameLogic->makeMove(currentPlayer, gameBoard, row - 1, col - 1);
-}
-
 
 
 void GameFlow::changeTurn(Player& player, bool& playerFlag) {
@@ -139,3 +247,4 @@ void GameFlow::changeTurn(Player& player, bool& playerFlag) {
         playerFlag = true;
     }
 }
+

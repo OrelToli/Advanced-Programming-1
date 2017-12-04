@@ -1,14 +1,10 @@
-/**
- * Limor Levi 308142389
- * Orel Israeli 204225148
- */
+//
+// Created by Orel on 02/12/2017.
+//
 
+#include "RemoteLogic.h"
 
-#include <limits>
-#include "DefaultLogic.h"
-
-
-DefaultLogic::DefaultLogic(Board* board, Player& xPlayer, Player& oPlayer,Print* printStyle) :
+RemoteLogic::RemoteLogic(Board* board, Player& xPlayer, Player& oPlayer,Print* printStyle) :
         GameLogic(board, xPlayer, oPlayer, printStyle) {
     //initialization the array of directions
     this->directions[0] = RIGHT;
@@ -24,8 +20,3 @@ DefaultLogic::DefaultLogic(Board* board, Player& xPlayer, Player& oPlayer,Print*
     this->oPlayer = oPlayer;
     this->printStyle = printStyle;
 }
-
-
-
-
-

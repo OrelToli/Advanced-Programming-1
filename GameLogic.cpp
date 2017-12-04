@@ -1,7 +1,8 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
+#include <limits>
 #include "GameLogic.h"
 
 using namespace std;
@@ -52,4 +53,173 @@ bool GameLogic::isAnotherSquareOfPlayerInDirection(enum Type player, Direction d
         }
     }
     return false;
+}
+
+void GameLogic::getMoveAndPlayIt(Board& gameBoard, Player& currentPlayer, vector<Square>& options) {
+    int row, col;
+    char dummy;
+    //print the current state of the board and ask move from the player
+    this->printStyle->printBoard(gameBoard);
+    this->printStyle->announceTurn(currentPlayer);
+    this->printStyle->printOptionsToPlayer(options);
+    //wait to the user input and check correctness of it
+    while (true) {
+        this->printStyle->askMoveFromPlayer();
+        cin >> row >> dummy >> col;
+        //check if row and col are valid integers
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if ((!board->isSquareInBoard(row - 1, col - 1)) ||
+            (!gameBoard.getSquare(row - 1, col - 1)->isSquareInVector(options))) {
+            this->printStyle->wrongInput();
+            continue;
+        }
+        break;
+    }
+    this->printStyle->createSpace();
+    //make the current player's move
+    makeMove(currentPlayer, gameBoard, row - 1, col - 1);
+}
+
+
+
+enum gameOverOrNot GameLogic::gameOver(){
+    gameOverOrNot currentGame = gameContinues;
+    //vector that suppose to contain all the possible moves of the player
+    vector<Square> squares;
+    vector<Square>&options = squares;
+    //case 1 : the game ends because the board is full
+    if(board->isBoardFull())
+        currentGame = gameOverFullBoard;
+
+    else
+        //case 2: the game ends because both of the players has no options to move
+    if((isAvailableMove(*board, this->xPlayer).empty()) &&
+       (isAvailableMove(*board, this->oPlayer).empty())) {
+        currentGame = gameOverNoMoreMoves;
+    }
+
+    return currentGame;
+}
+
+
+vector<Square> GameLogic::isAvailableMove(Board& gameBoard, Player player){
+    enum Type currentPlayer = player.getType();
+    //vector that suppose to contain all the possible moves of the player
+    vector<Square> squares , &options = squares;
+    for(int i=0;i<gameBoard.getBoardSize() ;i++){
+        for(int j=0;j<gameBoard.getBoardSize() ;j++){
+            //when we found a square of the current player - we should check the squares around it
+            if(gameBoard.getSquare(i,j)->getType() == currentPlayer){
+                checkSquare(i, j, currentPlayer, options, gameBoard);
+            }
+        }
+    }
+    return options;
+}
+
+void GameLogic::humanMakeMove(Board& gameBoard, Player& player, Print* printStyle) {
+
+    //check what is the optional moves for the current player
+    vector<Square> options = isAvailableMove(gameBoard, player);
+    if (options.empty()) {
+        printStyle->noPossibleOptionsToCurrentPlayer(player.getType());
+        return;
+    }
+    getMoveAndPlayIt(gameBoard, player, options);
+    options.clear();
+
+    printStyle->boardAfterUser();
+    printStyle->printBoard(gameBoard);
+
+}
+
+
+void GameLogic::checkSquare(int i, int j,enum Type player, vector<Square>& options, Board& gameBoard){
+    //check what is the type of the enemy - 'X' or 'O'
+    Type enemy;
+    if (player == typeX)
+        enemy = typeO;
+    else
+        enemy = typeX;
+    //check each of the directions around the square
+    for(int k=0;k<NUMDIRECTIONS;k++){
+        if(isAnotherSquareOfPlayerInDirection(enemy,directions[k],i,j)){
+            int dx = valueOfDirection(directions[k]).first, dy = valueOfDirection(directions[k]).second,
+                    currentX = i + dx,currentY = j + dy;
+            //while the square is on the board limits and equals to the enemy's sign - keep checking the direction
+            while ((gameBoard.isSquareInBoard(currentX,currentY)) &&
+                   (gameBoard.getSquareType(currentX,currentY) == enemy)){
+                currentX = currentX + valueOfDirection(directions[k]).first;
+                currentY = currentY + valueOfDirection(directions[k]).second;
+            }
+            //check what is the reason the while loop ends: the square is free or the square is not on the board
+            if(!gameBoard.isSquareInBoard(currentX,currentY)) {
+                continue;
+            } else {
+                if ((gameBoard.getSquare(currentX,currentY)->getType() == typeEmpty) &&
+                    (!(gameBoard.getSquare(currentX,currentY)->isSquareInVector(options)))){
+                    //the square is on the board and it is free, so add this option to the options list
+                    options.push_back(*(gameBoard.getSquare(currentX,currentY)));
+                }
+            }
+        }
+    }
+}
+
+
+void GameLogic::makeMove(Player& currentPlayer, Board& gameBoard, int row, int col) {
+    Player temp = this->xPlayer;
+    Player& enemy = temp;
+    //check what is the type of the enemy - 'X' or 'O'
+    if (currentPlayer.getType() == typeX){
+        temp = this->oPlayer;
+        enemy = temp;
+    }
+    //change the square that the player choose to the current player sign
+    gameBoard.setSquare(row, col, currentPlayer.getType());
+    //change the relevant squares around the square that the current player choose
+    for (int k = 0; k < 8; k++) {
+        if (isAnotherSquareOfPlayerInDirection(currentPlayer.getType(), directions[k],row, col)) {
+            changeSquares(currentPlayer, enemy, directions[k], gameBoard, row, col);
+        }
+    }
+}
+
+
+void GameLogic::changeSquares(Player& currentPlayer, Player& enemy, Direction direction, Board& gameBoard, int i, int j){
+    int dx = valueOfDirection(direction).first, dy = valueOfDirection(direction).second,
+            currentX = i + dx, currentY = j + valueOfDirection(direction).second;
+    while((gameBoard.isSquareInBoard(currentX,currentY)) && (gameBoard.getSquareType(currentX,currentY) != currentPlayer.getType()))
+    {
+        if(gameBoard.getSquareType(currentX,currentY) == enemy.getType()) {
+            //change the square of the enemy to the sign of the current player
+            gameBoard.setSquare(currentX, currentY, currentPlayer.getType());
+
+        }
+        currentX = currentX + dx;
+        currentY = currentY + dy;
+    }
+}
+
+
+enum Type GameLogic::checkWhoWins(Board *gameBoard){
+    int xCounter=0, oCounter=0;
+    //count the number of 'X' squares and 'O' squares in the board
+    for(int i=0;i<gameBoard->getBoardSize();i++){
+        for(int j=0;j<gameBoard->getBoardSize();j++){
+            if(gameBoard->getSquareType(i,j) == typeX)
+                xCounter++;
+            else if (gameBoard->getSquareType(i,j) == typeO)
+                oCounter++;
+        }
+    }
+    if(xCounter>oCounter)
+        return typeX;
+    else if (oCounter>xCounter)
+        return typeO;
+    else
+        return typeEmpty;
 }

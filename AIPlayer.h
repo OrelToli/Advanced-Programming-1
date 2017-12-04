@@ -1,6 +1,7 @@
-//
-// Created by Orel on 18/11/2017.
-//
+/**
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #include "Player.h"
 
@@ -15,7 +16,7 @@ class AIPlayer : public Player {
 public :
 
     /**
-     * COnstructor
+     * Constructor
      * @param type - the type of the player, X or O
      */
     AIPlayer(enum Type type);
