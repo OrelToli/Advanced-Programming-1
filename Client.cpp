@@ -2,17 +2,29 @@
 // Created by Orel on 03/12/2017.
 //
 
+#include <fstream>
+#include <cstdlib>
 #include "Client.h"
 
 
 using namespace std;
-Client::Client(const char *serverIP, int serverPort):
-        serverIP(serverIP), serverPort(serverPort),
-        clientSocket(0) {
-
-    this->serverIP = serverIP;
-    this->serverPort = serverPort;
-    this->clientSocket = 0;
+Client::Client(){
+    char ipAddress[20], port[4];
+    ifstream myFile;
+    myFile.open("clientSettings.txt");
+    if(myFile.is_open()){
+        //read the ip address
+        myFile>>ipAddress;
+        string temp(ipAddress);
+        this->ip = temp;
+        this->serverIP = ip.c_str();
+        //read the port number
+        myFile>>port;
+        this->port = atoi (port);
+        myFile>>this->port;
+    }
+    //close "settings.txt" file
+    myFile.close();
 }
 
 void Client::connectToServer() {
@@ -39,7 +51,7 @@ void Client::connectToServer() {
     serverAddress.sin_family = AF_INET;
     memcpy((char *)&serverAddress.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
     // htons converts values between host and network byte orders
-    serverAddress.sin_port = htons(serverPort);
+    serverAddress.sin_port = htons(port);
     // Establish a connection with the TCP server
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) {
         throw "Error connecting to server";

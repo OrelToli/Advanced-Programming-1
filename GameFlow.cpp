@@ -99,12 +99,9 @@ void GameFlow::handleAIGame() {
 
 
 void GameFlow::handleRemoteGame() {
-    int portNumber;
-    string ip;
-    getIPPort(ip,portNumber);
     int turn;
     Player* localPlayer, *remotePlayer;
-    Client client = Client(ip.c_str(), portNumber);
+    Client client = Client();
     int setup = setupClientAndPlayerType(client);
     if (setup == 1) {
         localPlayer = new HumanPlayer(typeX);
@@ -147,24 +144,6 @@ void GameFlow::handleRemoteGame() {
     }
     ///if game is over, send to them or receive that the game is over
     printGameOverAndWinner(this->currentGame);
-}
-
-void GameFlow::getIPPort(string& ip, int& portNumber) {
-    char ipAddress[20], port[4];
-    ifstream myFile;
-
-    myFile.open("settings.txt");
-    if(myFile.is_open()){
-        //read the ip address
-        myFile>>ipAddress;
-        ip = ipAddress;
-        //read the port number
-        myFile>>port;
-        portNumber = atoi (port);
-        myFile>>portNumber;
-    }
-    //close "settings.txt" file
-    myFile.close();
 }
 
 

@@ -15,15 +15,16 @@ using namespace std;
 class Client {
 
 public:
-    Client(const char *serverIP, int serverPort);
+    Client();
     void connectToServer();
     void sendMove(int* move);
     int getPlayerType();
     void getRemoteMove(int* move);
 
 private:
-    const char *serverIP;
-    int serverPort;
+    string ip;
+    const char* serverIP;
+    int port;
     int clientSocket;
 
 };

@@ -86,7 +86,7 @@ void PrintConsole::createSpace(){
 
 
 void PrintConsole::noPossibleOptionsToCurrentPlayer(enum Type currentPlayer) {
-    cout<<returnType(currentPlayer)<<" - you don't have any possible options to do - you lose your turn"<<endl;
+    cout<<"Player "<<returnType(currentPlayer)<<" - doesn't have any possible moves to play and loses the turn"<<endl;
 }
 
 

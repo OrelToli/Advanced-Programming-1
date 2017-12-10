@@ -15,7 +15,7 @@ using namespace std;
 #include "Board.h"
 #include "Client.h"
 
-enum gameType {Local, AI, Remote};
+enum gameType {Local, AI, Remote, NoGame};
 
 class GameFlow {
 
@@ -60,9 +60,6 @@ public:
     int setupClientAndPlayerType(Client& client);
 
     int changeRemoteTurn(int turn);
-
-    void getIPPort(string& ip, int& portNumber);
-
 
 private:
     GameLogic* gameLogic;

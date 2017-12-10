@@ -130,15 +130,27 @@ void GameLogic::humanMakeMove(Board& gameBoard, Player& player, Print* printStyl
     vector<Square> options = isAvailableMove(gameBoard, player);
     if (options.empty()) {
         printStyle->noPossibleOptionsToCurrentPlayer(player.getType());
-        lastRow = -1;
-        lastCol = -1;
+        if(gameOver() == gameContinues) {
+            lastRow = -1;
+            lastCol = -1;
+
+        } else {
+
+            lastRow = -2;
+            lastCol = -2;
+        }
+
         arrayLocation[0] = lastRow;
         arrayLocation[1] = lastCol;
+
+
     } else {
 
     getMoveAndPlayIt(gameBoard, player, options);
     options.clear();
-    printStyle->boardAfterUser(player, arrayLocation[0], arrayLocation[1]);
+    arrayLocation[0] = lastRow;
+    arrayLocation[1] = lastCol;
+    printStyle->boardAfterUser(player, lastRow, lastCol);
     }
 }
 

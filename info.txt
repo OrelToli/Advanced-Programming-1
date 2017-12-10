@@ -1,0 +1,6 @@
+students :
+ 
+name : Limor Levi, id number :308142389, tirgul-group: 03
+ 
+name : Orel Israeli, id number : 204225148, tirgul-group : 03
+

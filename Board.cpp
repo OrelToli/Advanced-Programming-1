@@ -13,7 +13,7 @@ Board::Board(int size) {
     }
     for (int i = 0; i < size + 1; i++)
         for (int j = 0; j < size + 1; j++) {
-            this->board[i][j] = new Square(i, j, typeX);
+            this->board[i][j] = new Square(i, j, typeEmpty);
         }
     //associate specific squares to the players
     int location1 = size / 2 - 1, location2 = size / 2;
@@ -21,7 +21,7 @@ Board::Board(int size) {
     setSquare(location2, location2, typeO);
     setSquare(location1, location2, typeX);
     setSquare(location2, location1, typeX);
-    setSquare(5, 4, typeEmpty);
+
 
 }
 

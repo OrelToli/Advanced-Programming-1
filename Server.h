@@ -8,12 +8,21 @@
 
 #define NO_MOVES "NoMove"
 #define END_GAME "End"
-using namespace std;
 #include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <string.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <cstdlib>
+
+using namespace std;
 class Server {
 
 public:
-    Server(int port);
+    Server();
     void start();
     void stop();
     void handleClient(int client1, int client2);
