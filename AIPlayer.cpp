@@ -1,6 +1,7 @@
-//
-// Created by Orel on 18/11/2017.
-//
+/**
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #include "AIPlayer.h"
 

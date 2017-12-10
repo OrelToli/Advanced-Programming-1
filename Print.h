@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef PRINT_H
 #define PRINT_H
@@ -87,7 +87,7 @@ public :
      * @name :
      * Asks the player whether he wants to play a CO-OP game or game vs AI
      **/
-    virtual void chooseAIGameOrCoop() = 0 ;
+    virtual void chooseGameType() = 0 ;
 
     /**
      * @name : Prints the move that the AI played.
@@ -106,7 +106,15 @@ public :
     /**
      * @name : Prints on the screen that the User player played.
      */
-    virtual void boardAfterUser() = 0;
+    virtual void boardAfterUser(Player& player, int row, int col) = 0;
+
+
+    virtual void connectedToServer() = 0;
+
+    virtual void waitingForOtherPlayer()= 0;
+
+    virtual void waitingForClientConnection() = 0;
+
 
 };
 #endif //PRINT_H

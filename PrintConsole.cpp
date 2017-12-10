@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #include "PrintConsole.h"
 
@@ -90,12 +90,11 @@ void PrintConsole::noPossibleOptionsToCurrentPlayer(enum Type currentPlayer) {
 }
 
 
-void PrintConsole::chooseAIGameOrCoop() {
-    cout<<"Choose the type of the game :"<<endl;
-    cout<<"insert 0 for human player against human player "<<endl;
-    cout<<"insert 1 for human player against AI player "<<endl;
-
-
+void PrintConsole::chooseGameType() {
+    cout<<"Choose an opponent type :"<<endl;
+    cout<<"1. a human local player"<<endl;
+    cout<<"2. an AI player"<<endl;
+    cout<<"3. a remote player"<<endl;
 
 }
 
@@ -105,9 +104,9 @@ void PrintConsole::printPlayAI(int row, int col) {
 
 }
 
-void PrintConsole::boardAfterUser() {
+void PrintConsole::boardAfterUser(Player& player, int row, int col) {
     cout<<endl;
-    cout<<"The Board After X Played:"<<endl;
+    cout<<"The Board After "<<returnType(player.getType())<<" Played:("<<row<<","<<col<<")"<<endl;
 }
 
 char PrintConsole::returnType(enum Type type) {
@@ -119,5 +118,21 @@ char PrintConsole::returnType(enum Type type) {
         case (typeX):
             return 'X';
     }
+}
+
+
+
+void PrintConsole::connectedToServer(){
+    cout<<"Connected to server"<<endl;
+}
+
+
+void PrintConsole::waitingForOtherPlayer(){
+    cout<<"waiting for other player to join..."<<endl;
+}
+
+
+void PrintConsole::waitingForClientConnection(){
+    cout <<"Waiting for client connections..."<<endl;
 }
 

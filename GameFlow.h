@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef GAMEFLOW_H
 #define GAMEFLOW_H
@@ -13,6 +13,9 @@ using namespace std;
 #include "Player.h"
 #include "GameLogic.h"
 #include "Board.h"
+#include "Client.h"
+
+enum gameType {Local, AI, Remote};
 
 class GameFlow {
 
@@ -22,7 +25,7 @@ public:
      * @parameters : game logic object , the game of the board and the players
      * @return : the function creates new instance of gameFlow object
      **/
-    GameFlow(GameLogic* gameLogic, Board* board, Player& xPlayer, Player& oPlayer, Print* printStyle);
+    GameFlow(Board * gameBoard, GameLogic* gameLogic,Player player1, Player player2, Print* printStyle, gameType type);
 
     /**
      * @name : runGame
@@ -39,19 +42,26 @@ public:
     void changeTurn(Player& player, bool& playerFlag);
 
     /**
-     * Asks the user whether he wants a co-op game or User vs AI game.
-     * @return - 1 for User vs AI, 0 for CO-OP
+     * Asks the user whether he wants a co-op game or User vs AI game or Remote Play.
      */
-    int AIorUser();
+    GameLogic* decideGameType();
 
-    /**
-     * Gets a vector of possible moves. The function is responsible for declaring the possible moves,
-     * getting the move input from the user, and playing it.
-     * @param gameBoard - The current gameboard
-     * @param currentPlayer - The current player to play the game
-     * @param options - Our vector of possible moves.
-     */
-    void getMoveAndPlayIt(Board& gameBoard, Player& currentPlayer, vector<Square>& options);
+
+    void printGameOverAndWinner(gameOverOrNot currentGame);
+
+    void handleHumanGame();
+
+
+    void handleAIGame();
+
+
+    void handleRemoteGame();
+
+    int setupClientAndPlayerType(Client& client);
+
+    int changeRemoteTurn(int turn);
+
+    void getIPPort(string& ip, int& portNumber);
 
 
 private:
@@ -60,5 +70,7 @@ private:
     Player xPlayer;
     Player oPlayer;
     Print* printStyle;
+    enum gameType type;
+    enum gameOverOrNot currentGame;
 };
 #endif //GAMEFLOW_H

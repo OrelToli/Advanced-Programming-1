@@ -1,7 +1,7 @@
 /**
- * name : Limor Levi
- * id number : 308142389
-**/
+ * Limor Levi 308142389
+ * Orel Israeli 204225148
+ */
 
 #ifndef BOARD_H_
 #define BOARD_H_
@@ -29,8 +29,12 @@ public :
      */
     Board(Board& oldBoardToCopy);
 
+    /**
+      * @name: Board
+      * @param no parameters
+      * @return default constructor
+      */
     Board();
-
 
     /**
      * @name : getBoardSize
@@ -94,16 +98,6 @@ public :
     * @return : the function returns true if the boards are equals, or false otherwise
     **/
     bool equals(Board* otherBoard);
-
-    /**
-    * @name : getBoard
-    * @parameters : no parameters
-    * @return : the function returns the board of the game
-    **/
-    Square*** getBoard();
-
-
-
 
 private :
     int boardSize ;
